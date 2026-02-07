@@ -1,0 +1,7 @@
+1) make all the relevant routes protected
+
+3) some issue with the updation of price in the cart when we remove or update.
+
+4) dbOrders, change the make order api for database, create another global state, update the details from the products page, when we create the order after confirming the shiprocket order then we are going to add info from that global state to the api request body.
+
+5) all same product but diffrent sizes deketed in cart

@@ -1,0 +1,5 @@
+@media (max-width: 668px) and (min-width: 375px) {
+    .links{
+        display: hidden;
+    }
+}
