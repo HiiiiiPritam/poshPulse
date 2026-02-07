@@ -56,14 +56,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
     async jwt({ token, user, trigger, session }) {
       if (user) {
+        console.log("🔑 [Auth] JWT Callback - User Logged In:", user.email, "Role:", user.role);
         token.id = user.id;
         token.role = user.role;
       } else if (token.id) {
-        // Fetch fresh role from DB if user object is not present (subsequent requests)
+         // Log usage
+         // console.log("🔄 [Auth] JWT Callback - Frequent Access:", token.email);
+         // Fetch fresh role from DB if user object is not present (subsequent requests)
         await dbConnect();
         const freshUser = await User.findById(token.id);
         if (freshUser) {
-          token.role = freshUser.role;
+           if (token.role !== freshUser.role) {
+             console.log("⚠️ [Auth] Role Mismatch! Updating Token. Cookie:", token.role, "DB:", freshUser.role);
+             token.role = freshUser.role;
+           }
         }
       }
       return token;

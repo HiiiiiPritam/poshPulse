@@ -37,14 +37,23 @@ export default async function middleware(req: Request) {
 
   // Protect Admin Routes
   if (url.pathname.startsWith("/admin")) {
+    // Log for debugging
+    console.log("🔒 Middleware Admin Check:");
+    console.log("   - Path:", url.pathname);
+    console.log("   - Is Logged In:", isLoggedIn);
+    console.log("   - Token Role:", token?.role);
+    
     if (!isLoggedIn) {
+      console.log("   ❌ Access Denied: Not logged in");
       return NextResponse.redirect(new URL("/", req.url));
     }
     
     // Check for admin role
     if (token?.role !== 'admin') {
+      console.log("   ❌ Access Denied: Role is not admin (Role: " + token?.role + ")");
       return NextResponse.redirect(new URL("/", req.url)); // Redirect non-admins
     }
+    console.log("   ✅ Access Granted to Admin");
   }
 
   return NextResponse.next(); // Proceed if authenticated or route is not protected
