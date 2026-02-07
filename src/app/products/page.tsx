@@ -12,7 +12,7 @@ const ProductCard = dynamic(() => import("@/components/productCard"));
 // Note: filename is FilterPannel.tsx in codebase
 const FilterPanel = dynamic(() => import("@/components/helpers/FilterPannel"));
 
-const ProductPage = () => {
+const ProductContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -192,6 +192,14 @@ const ProductPage = () => {
         </main>
       </div>
     </div>
+  );
+};
+
+const ProductPage = () => {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#FFFAFA]" />}>
+      <ProductContent />
+    </Suspense>
   );
 };
 

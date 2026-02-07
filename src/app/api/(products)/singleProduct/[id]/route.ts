@@ -15,7 +15,7 @@ async function isAdmin() {
 }
 
 // GET a product by ID (Public)
-export async function GET(req: NextRequest, { params }: any) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
     await dbConnect();
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest, { params }: any) {
 }
 
 // PUT update a product by ID (Admin Only)
-export async function PUT(req: NextRequest, { params }: any) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
   if (!(await isAdmin())) {
@@ -61,7 +61,7 @@ export async function PUT(req: NextRequest, { params }: any) {
 }
 
 // DELETE a product by ID (Admin Only)
-export async function DELETE(req: NextRequest, { params }: any) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
   if (!(await isAdmin())) {
