@@ -1,63 +1,59 @@
 import { NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { auth } from "@/auth"; // Use the v5 auth helper
 import { rateLimit } from "@/libs/rateLimit";
 
-export const runtime = "nodejs"; // Explicitly set the runtime to Node.js
+export const runtime = "nodejs"; // Keep Node.js runtime for Mongoose compatibility
 
 const protectedRoutes = ["/dashboard", "/imageUpload"];
 
-export default async function middleware(req: Request) {
-  const token = await getToken({
-    req,
-    secret: process.env.AUTH_SECRET || "",
-  });
+export default auth((req) => {
+  const isLoggedIn = !!req.auth;
+  const user = req.auth?.user;
+  const url = new URL(req.url); // req.url is a string in v5 wrapper? No, NextRequest.
+  // Actually in v5 auth wrapper, req is (NextRequest & { auth: Session | null })
 
-  const isLoggedIn = !!token; // Check if the token exists
-  const url = new URL(req.url);
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    url.pathname.startsWith(route)
-  );
+  // Log for debugging (Edge/Node logs)
+  if (url.pathname.startsWith("/admin")) {
+      console.log("🔒 Middleware v5 Check:");
+      console.log("   - Path:", url.pathname);
+      console.log("   - Auth Object:", !!req.auth);
+      console.log("   - Role:", user?.role);
+  }
 
   // Rate Limiting Logic
   if (url.pathname.startsWith("/api")) {
     const ip = req.headers.get("x-forwarded-for") || "unknown";
-    const limiter = rateLimit({ interval: 60 * 1000, uniqueTokenPerInterval: 500 }); // 1 minute window
-    
-    // Check if the IP has exceeded the limit (20 requests per minute)
+    const limiter = rateLimit({ interval: 60 * 1000, uniqueTokenPerInterval: 500 });
     const isAllowed = limiter.check(20, ip); 
-
     if (!isAllowed) {
        return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
     }
   }
 
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    url.pathname.startsWith(route)
+  );
+
   if (isProtectedRoute && !isLoggedIn) {
-    return NextResponse.redirect(new URL("/", req.url)); // Redirect to homepage if not authenticated
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
   // Protect Admin Routes
   if (url.pathname.startsWith("/admin")) {
-    // Log for debugging
-    console.log("🔒 Middleware Admin Check:");
-    console.log("   - Path:", url.pathname);
-    console.log("   - Is Logged In:", isLoggedIn);
-    console.log("   - Token Role:", token?.role);
-    
     if (!isLoggedIn) {
       console.log("   ❌ Access Denied: Not logged in");
       return NextResponse.redirect(new URL("/", req.url));
     }
     
-    // Check for admin role
-    if (token?.role !== 'admin') {
-      console.log("   ❌ Access Denied: Role is not admin (Role: " + token?.role + ")");
-      return NextResponse.redirect(new URL("/", req.url)); // Redirect non-admins
+    if (user?.role !== 'admin') {
+      console.log("   ❌ Access Denied: User is not admin");
+      return NextResponse.redirect(new URL("/", req.url));
     }
-    console.log("   ✅ Access Granted to Admin");
+    console.log("   ✅ Access Granted");
   }
 
-  return NextResponse.next(); // Proceed if authenticated or route is not protected
-}
+  return NextResponse.next();
+});
 
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
