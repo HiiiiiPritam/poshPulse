@@ -27,8 +27,8 @@ const playFair = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "RJ Traditional",
-  description: "Weaving heritage into fashion",
+  title: "Posh Pulse | Premium Ethnic Wear",
+  description: "Weaving heritage into fashion. Discover exquisite Sarees, Lehengas, and Suits.",
   icons: {
     icon: "/logo.png",
   },

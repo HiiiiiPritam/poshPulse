@@ -88,7 +88,7 @@ const Navbar = () => {
   };
 
   return (
-    <header className="bg-[#A0214D] w-full h-16 md:h-20 sticky top-0 flex items-center justify-between px-2 md:px-6 z-30">
+    <header className="bg-primary w-full h-16 md:h-20 sticky top-0 flex items-center justify-between px-2 md:px-6 z-30">
       {/* <div className="flex items-center gap-3"> */}
         {/* Hamburger Icon */}
         <button
@@ -102,8 +102,8 @@ const Navbar = () => {
         <div className={`sm:text-base h-full flex items-center gap-2 font-bold text-white ${playFair.className}`}>
           {/* <Image src="/logo.png" alt="logo" className="rounded-md text-lg" width={60} height={60} /> */}
           <div className="flex flex-col items-center justify-center md:gap-3 sm:gap-2  sm:mt-2 ">
-            <Link href="/" className=" pl-2 justify-cente flex text-[32px] sm:text-[40px] md:text-[50px]" >RJT</Link>
-            <Link href="/" className="pl-2 flex text-[8px] sm:text-[12px] md:text-[12px]" >Rj Traditional</Link>
+            <Link href="/" className=" pl-2 justify-cente flex text-[32px] sm:text-[40px] md:text-[50px]" >PP</Link>
+            <Link href="/" className="pl-2 flex text-[8px] sm:text-[12px] md:text-[12px] tracking-widest uppercase" >Posh Pulse</Link>
           </div>
         </div>
 
@@ -111,7 +111,7 @@ const Navbar = () => {
 
       {/* Navigation Links */}
       <nav
-        className={`absolute lg:static top-[63px] md:top-20 left-0 w-full lg:w-auto lg:flex bg-[#A0214D] text-black lg:bg-transparent flex-col lg:flex-row lg:items-center transition-all ${isMenuOpen ? "block" : "hidden"
+        className={`absolute lg:static top-[63px] md:top-20 left-0 w-full lg:w-auto lg:flex bg-primary text-black lg:bg-transparent flex-col lg:flex-row lg:items-center transition-all ${isMenuOpen ? "block" : "hidden"
           }`}
       >
         <ul className="flex flex-col items-center lg:flex-row gap-6 p-2">
@@ -153,6 +153,11 @@ const Navbar = () => {
                 <Link onClick={() => setDropdownOpen(false)} className="block w-4/5 rounded-md px-4 py-2 text-black hover:bg-gray-200" href="/yourOrders">
                   Your Orders
                 </Link>
+                {session.user?.role === "admin" && (
+                    <Link onClick={() => setDropdownOpen(false)} className="block w-4/5 rounded-md px-4 py-2 text-black hover:bg-gray-200" href="/admin">
+                      Admin Dashboard
+                    </Link>
+                )}
                 <hr className="w-full bg-white" />
                 <button onClick={() => setDropdownOpen(false)}  className="block w-4/5 rounded-md px-4 py-2 text-white bg-red-500 hover:bg-red-600">
                   <SignOut />

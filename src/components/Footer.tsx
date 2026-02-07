@@ -14,17 +14,17 @@ const Footer = () => {
   const [isContactVisible, setIsContactVisible] = useState(false);
 
   return (
-    <footer className="bg-[#A0214D] text-white px-6 md:px-16 py-10 z-30">
+    <footer className="bg-primary text-white px-6 md:px-16 py-10 z-30">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Business Details Section */}
         <div className="flex font-semibold flex-col">
           <div
             className={`lg:text-3xl mb-4 sm:text-2xl font-bold p-2-0 text-white ${playFair.className}`}
           >
-            <Link href="/">RJ TRADITIONAL</Link>
+            <Link href="/">POSH PULSE</Link>
           </div>
           <p className="text-sm leading-relaxed">
-            RJ Traditional, a Jaipur-based brand, offers premium ethnic
+            Posh Pulse, a Jaipur-based brand, offers premium ethnic
             collections, blending tradition and style.
           </p>
           <div className="flex space-x-4 mt-4">
@@ -96,7 +96,7 @@ const Footer = () => {
 
       {/* Footer Bottom Section */}
       <div className="flex flex-wrap justify-between items-center">
-        <p className="text-sm">© 2024 RJTraditional</p>
+        <p className="text-sm">© 2024 Posh Pulse</p>
         <div className="flex flex-wrap space-x-4 text-sm">
           <Link href="/ourInfo/aboutUs" className="hover:text-blue-400">
             About Us
