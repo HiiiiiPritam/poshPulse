@@ -4,6 +4,8 @@ import dbConnect from "@/libs/dbConnect";
 import Order from "@/models/Orders";
 import { auth } from "@/auth";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     const session = await auth();
@@ -22,6 +24,8 @@ export async function GET(req: NextRequest) {
     if (status !== "ALL") {
       query.status = status;
     }
+
+    console.log("🔍 [Admin Orders] Filtering by:", query);
 
     const skip = (page - 1) * limit;
 

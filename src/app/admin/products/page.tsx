@@ -75,11 +75,12 @@ export default function AdminProductsPage() {
             onChange={handleCategoryChange}
           >
             <option value="All">All Categories</option>
-            <option value="Sarees">Sarees</option>
-            <option value="Lehengas">Lehengas</option>
-            <option value="Suits">Suits</option>
-            <option value="Gowns">Gowns</option>
-            <option value="Kurtis">Kurtis</option>
+            <option value="SAREE">Saree</option>
+            <option value="LEHENGA">Lehenga</option>
+            <option value="SUITS">Suits</option>
+            <option value="GOWNS">Gowns</option>
+            <option value="KURTI">Kurti</option>
+            <option value="DUPATTA">Dupatta</option>
           </select>
           <Link
             href="/admin/products/add"
