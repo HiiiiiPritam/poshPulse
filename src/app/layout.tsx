@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import SignIn from "@/components/authComp/signInButton";
+// import SignIn from "@/components/authComp/signInButton";
 import { SessionProvider } from "next-auth/react";
 import Navbar from "../components/Navbar";
 import whatsapp from "../../public/utilityIcons/whatsapp.svg";

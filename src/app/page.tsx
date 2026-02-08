@@ -17,9 +17,7 @@ function Page() {
     const vids : any= ["/rj1.webp","/rj2.webp","/rj4.webp"];
 
     useEffect(() => {
-        const state = useProductStore.getState();
-        console.log("vids", vids);
-        console.log('State size:', JSON.stringify(state).length / 1024, 'KB');
+        // useProductStore.getState();
     },[products]);
 
 

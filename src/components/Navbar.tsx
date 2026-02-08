@@ -35,6 +35,7 @@ const Navbar = () => {
   const cart = useCartStore((state) => state.Cart);
 
   const [dropdownOpen, setDropdownOpen] = useState(false); // Dropdown toggle state
+  const navRef = React.useRef<HTMLElement>(null); // Ref for click outside
 
   useEffect(() => {
     const fetchCartData = async () => {
@@ -46,6 +47,20 @@ const Navbar = () => {
     fetchCartData();
   }, [session, fetchCart, fetchProducts]);
 
+  // Click Outside Listener
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+        setDropdownOpen(false);
+        setSearchActive(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
 
   // Handle toggle
@@ -88,7 +103,7 @@ const Navbar = () => {
   };
 
   return (
-    <header className="bg-primary w-full h-16 md:h-20 sticky top-0 flex items-center justify-between px-2 md:px-6 z-30">
+    <header ref={navRef} className="bg-primary w-full h-16 md:h-20 sticky top-0 flex items-center justify-between px-2 md:px-6 z-30">
       {/* <div className="flex items-center gap-3"> */}
         {/* Hamburger Icon */}
         <button
@@ -188,18 +203,18 @@ const Navbar = () => {
 
         {/* Search Bar */}
         {searchActive && (
-          <div className="absolute top-[44px] lg:top-[50px] right-[-8%]  bg-white transition-all ease-in-out shadow-md w-[100vw] lg:w-[90vw] p-4 mt-2 rounded-md">
+          <div className="absolute top-[44px] lg:top-[50px] right-[-8%]  bg-white transition-all ease-in-out shadow-md w-[80vw] lg:w-[40vw] p-4 mt-2 rounded-md">
             <input
               type="text"
               value={searchQuery}
               onChange={handleSearchChange}
               placeholder="Search products..."
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-600"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-600 focus:text-black text-black" 
             />
             {searchResults.length > 0 && (
               <ul className="mt-2 bg-white shadow-md rounded-md max-h-40 sm:max-h-96 overflow-y-auto">
                 {searchResults.map((result, index) => (
-                  <li key={index} className="hover:bg-pink-100 cursor-pointer">
+                  <li key={index} className="hover:bg-pink-100 cursor-pointer text-black">
                     <Link href={`/product/${result._id.toString()}`} onClick={() => setSearchActive(false)}>
                       <div className="flex items-center p-2 justify-between ">
                         <Image
