@@ -13,6 +13,7 @@ export interface IProduct extends Document {
   discountedPrice?: number;
   category: string;
   tags: string[];
+  colors: string[];
   sizes: ISizeStock[];
   images: string[];
   createdAt: Date;
@@ -32,6 +33,7 @@ const ProductSchema: Schema = new Schema(
     discountedPrice: { type: Number, default: null },
     category: { type: String, required: true },
     tags: [{ type: String }],
+    colors: [{ type: String }],
     sizes: [SizeStockSchema], // Array of size-stock pairs
     images: [{ type: String }],
   },

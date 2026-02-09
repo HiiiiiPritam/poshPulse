@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import Image from "next/image";
+import { PRODUCT_CATEGORIES, PRODUCT_TAGS, PRODUCT_SIZES, PRODUCT_COLORS } from "@/constants/productOptions";
 
 export default function AddProductPage() {
   const router = useRouter();
@@ -16,12 +17,13 @@ export default function AddProductPage() {
     description: "",
     price: "",
     discountedPrice: "",
-    category: "SAREE",
-    tags: "",
+    category: PRODUCT_CATEGORIES[0],
+    tags: [] as string[],
+    colors: [] as string[],
   });
 
   const [sizes, setSizes] = useState<{size: string, stock: number}[]>([]);
-  const [newSize, setNewSize] = useState("");
+  const [newSize, setNewSize] = useState(PRODUCT_SIZES[0]);
   const [newStock, setNewStock] = useState("");
 
   const [images, setImages] = useState<string[]>([]);
@@ -34,7 +36,7 @@ export default function AddProductPage() {
   const handleAddSize = () => {
     if (newSize && newStock) {
       setSizes(prev => [...prev, { size: newSize, stock: parseInt(newStock) }]);
-      setNewSize("");
+      // setNewSize(PRODUCT_SIZES[0]); // Don't reset to keep flow fast
       setNewStock("");
     }
   };
@@ -42,6 +44,25 @@ export default function AddProductPage() {
   const handleRemoveSize = (index: number) => {
     setSizes(prev => prev.filter((_, i) => i !== index));
   };
+
+  const toggleTag = (tag: string) => {
+    setFormData(prev => {
+        const newTags = prev.tags.includes(tag) 
+            ? prev.tags.filter(t => t !== tag)
+            : [...prev.tags, tag];
+        return { ...prev, tags: newTags };
+    });
+  };
+
+    const toggleColor = (color: string) => {
+    setFormData(prev => {
+        const newColors = prev.colors.includes(color) 
+            ? prev.colors.filter(c => c !== color)
+            : [...prev.colors, color];
+        return { ...prev, colors: newColors };
+    });
+  };
+
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -107,7 +128,8 @@ export default function AddProductPage() {
         ...formData,
         price: parseFloat(formData.price),
         discountedPrice: formData.discountedPrice ? parseFloat(formData.discountedPrice) : undefined,
-        tags: formData.tags.split(",").map(t => t.trim()),
+        tags: formData.tags, // Already array
+        colors: formData.colors,
         sizes,
         images,
       };
@@ -161,18 +183,54 @@ export default function AddProductPage() {
             <div>
               <label className="block text-sm font-medium mb-1">Category</label>
               <select name="category" value={formData.category} onChange={handleInputChange} className="w-full border p-2 rounded">
-                <option value="SAREE">Saree</option>
-                <option value="LEHENGA">Lehenga</option>
-                <option value="SUITS">Suits</option>
-                <option value="KURTI">Kurti</option>
-                <option value="DUPATTA">Dupatta</option>
+                {PRODUCT_CATEGORIES.map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                ))}
               </select>
             </div>
 
+             {/* Tags Selection */}
             <div>
-              <label className="block text-sm font-medium mb-1">Tags (comma separated)</label>
-              <input name="tags" value={formData.tags} onChange={handleInputChange} className="w-full border p-2 rounded" placeholder="silk, party wear, red" />
+              <label className="block text-sm font-medium mb-1">Tags</label>
+              <div className="flex flex-wrap gap-2 p-2 border rounded bg-gray-50 max-h-32 overflow-y-auto">
+                {PRODUCT_TAGS.map(tag => (
+                   <button
+                    key={tag}
+                    type="button"
+                    onClick={() => toggleTag(tag)}
+                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors border ${
+                        formData.tags.includes(tag) 
+                        ? "bg-black text-white border-black" 
+                        : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"
+                    }`}
+                   >
+                    {tag}
+                   </button>
+                ))}
+              </div>
             </div>
+
+             {/* Colors Selection */}
+             <div>
+              <label className="block text-sm font-medium mb-1">Colors</label>
+              <div className="flex flex-wrap gap-2 p-2 border rounded bg-gray-50 max-h-32 overflow-y-auto">
+                {PRODUCT_COLORS.map(color => (
+                   <button
+                    key={color}
+                    type="button"
+                    onClick={() => toggleColor(color)}
+                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors border ${
+                        formData.colors.includes(color) 
+                        ? "bg-black text-white border-black" 
+                        : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"
+                    }`}
+                   >
+                    {color}
+                   </button>
+                ))}
+              </div>
+            </div>
+
           </div>
 
           <div className="space-y-4">
@@ -180,7 +238,15 @@ export default function AddProductPage() {
             <div className="border p-4 rounded">
               <h3 className="font-medium mb-2">Sizes & Stock</h3>
               <div className="flex gap-2 mb-2">
-                <input placeholder="Size (e.g. M, XL)" value={newSize} onChange={e => setNewSize(e.target.value)} className="border p-2 rounded flex-1" />
+                <select 
+                    value={newSize} 
+                    onChange={e => setNewSize(e.target.value as any)} 
+                    className="border p-2 rounded flex-1"
+                >
+                    {PRODUCT_SIZES.map(size => (
+                        <option key={size} value={size}>{size}</option>
+                    ))}
+                </select>
                 <input type="number" placeholder="Stock" value={newStock} onChange={e => setNewStock(e.target.value)} className="border p-2 rounded w-24" />
                 <button type="button" onClick={handleAddSize} className="bg-blue-600 text-white px-4 rounded text-sm">Add</button>
               </div>
@@ -211,7 +277,7 @@ export default function AddProductPage() {
           </div>
         </div>
 
-        <button type="submit" disabled={loading} className={`w-full py-3 rounded text-white font-bold ${loading ? 'bg-gray-400' : 'bg-green-600 hover:bg-green-700'}`}>
+        <button type="submit" disabled={loading} className={`w-full py-3 rounded text-white font-bold ${loading ? 'bg-gray-400' : 'bg-black hover:bg-gray-800'}`}>
           {loading ? 'Creating...' : 'Create Product'}
         </button>
       </form>
