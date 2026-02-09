@@ -22,6 +22,10 @@ export async function POST(req: NextRequest) {
 
     // Find the user's cart
     // const userCart = await Cart.findOne({ userId });
+    // Generate Readable Order ID (e.g., ORD-192837)
+    const randomSuffix = Math.floor(100000 + Math.random() * 900000).toString();
+    const readableOrderId = `ORD-${randomSuffix}`;
+
     // Create the order
     const order = await Order.create({
       userId,
@@ -30,7 +34,8 @@ export async function POST(req: NextRequest) {
       shippingAddress,
       shiprocketOrderId,
       paymentMethod,
-      status: status ,
+      status: status,
+      readableOrderId, // Add to DB
     });
 
     // Deduct stock for each product

@@ -22,6 +22,11 @@ export interface IOrder extends Document {
   paymentMethod: 'COD' | 'Prepaid';
   createdAt: Date;
   updatedAt: Date;
+  readableOrderId?: string;
+  cancellationReason?: string;
+  cancelledAt?: Date;
+  cancelledBy?: string;
+  isCancellationHandled?: boolean;
 }
 
 const OrderItemSchema: Schema = new Schema({
@@ -47,6 +52,11 @@ const OrderSchema: Schema = new Schema(
       default: 'PENDING',
     },
     paymentMethod: { type: String, enum: ['COD', 'Prepaid'], required: true },
+    readableOrderId: { type: String },
+    cancellationReason: { type: String },
+    cancelledAt: { type: Date },
+    cancelledBy: { type: String },
+    isCancellationHandled: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

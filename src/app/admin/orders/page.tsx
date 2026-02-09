@@ -73,6 +73,21 @@ export default function AdminOrdersPage() {
     }
   };
 
+  const markAsHandled = async (orderId: string) => {
+      try {
+          const res = await fetch("/api/admin/orders/ack-cancellation", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ orderId }),
+          });
+          if (!res.ok) throw new Error("Failed to mark handled");
+          toast.success("Marked as handled");
+          fetchOrders();
+      } catch (error) {
+          toast.error("Failed to mark handled");
+      }
+  };
+
   const tabs = ["ALL", "PENDING", "ORDER_PLACED", "SHIPPED", "DELIVERED", "CANCELLED"];
 
   return (
@@ -116,9 +131,12 @@ export default function AdminOrdersPage() {
               </thead>
               <tbody>
                 {orders.length > 0 ? (
-                  orders.map((order) => (
+                  orders.map((order: any) => (
                     <tr key={order._id} className="border-b hover:bg-gray-50">
-                      <td className="p-4 font-mono text-sm">{order._id.substring(0, 8)}...</td>
+                      <td className="p-4 font-mono text-sm">
+                          <span className="font-bold text-indigo-600 block">{order.readableOrderId || "N/A"}</span>
+                          <span className="text-xs text-gray-400">#{order._id.substring(0, 8)}</span>
+                      </td>
                       <td className="p-4">
                         <div className="font-medium">{order.shippingAddress?.customer_name}</div>
                         <div className="text-xs text-gray-500">{order.shippingAddress?.email}</div>
@@ -133,6 +151,25 @@ export default function AdminOrdersPage() {
                         }`}>
                           {order.status}
                         </span>
+                        {order.status === 'CANCELLED' && (
+                            <div className="mt-1">
+                                {order.isCancellationHandled ? (
+                                    <span className="text-[10px] bg-green-50 text-green-600 px-1 rounded border border-green-100">Handled</span>
+                                ) : (
+                                    <button 
+                                        onClick={() => markAsHandled(order._id)}
+                                        className="text-[10px] bg-red-50 text-red-600 px-1 rounded border border-red-200 hover:bg-red-100 cursor-pointer"
+                                    >
+                                        Mark Handled
+                                    </button>
+                                )}
+                            </div>
+                        )}
+                        {order.cancellationReason && (
+                            <div className="text-[10px] text-gray-400 italic mt-1 max-w-[150px] truncate" title={order.cancellationReason}>
+                                "{order.cancellationReason}"
+                            </div>
+                        )}
                       </td>
                       <td className="p-4 text-sm">{new Date(order.createdAt).toLocaleDateString()}</td>
                       <td className="p-4">

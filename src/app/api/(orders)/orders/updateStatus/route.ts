@@ -1,15 +1,16 @@
-/// This route is probably for the admin dashboard
-
-
 import Orders from '@/models/Orders';
 import { NextRequest, NextResponse } from 'next/server';
-
+import { auth } from '@/auth';
 
 export async function PATCH(req: NextRequest) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { orderId, newStatus } = await req.json();
 
-   
     // Find the order by ID
     const order = await Orders.findById(orderId);
 
@@ -18,6 +19,11 @@ export async function PATCH(req: NextRequest) {
         { error: 'Order not found' },
         { status: 404 }
       );
+    }
+
+    // Security Check: Only allow if User is Owner OR User is Admin
+    if (order.userId.toString() !== session.user.id && session.user.role !== 'admin') {
+         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     // Update the delivery status
